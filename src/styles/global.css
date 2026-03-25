@@ -73,9 +73,9 @@ body {
 }
 main {
   width: 720px;
-  max-width: calc(100% - 1em);
+  max-width: 100%;
   margin: auto;
-  padding: 2em 1em;
+  padding: 2em 0;
 }
 h1,
 h2,
@@ -116,7 +116,7 @@ p {
   margin-bottom: 1em;
 }
 .prose p {
-  margin-bottom: 2em;
+  margin-bottom: 1.5em;
 }
 textarea {
   width: 100%;
@@ -131,7 +131,7 @@ table {
 img {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 code {
   padding: 2px 5px;
@@ -148,7 +148,7 @@ pre > code {
   all: unset;
 }
 blockquote {
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid rgb(var(--color-text));
   padding: 0 0 0 10px;
   margin: 0;
   font-size: 1em;
@@ -161,7 +161,7 @@ hr {
 
 .remark-container,
 .remark-details {
-  margin: 2.5em 0;
+  margin: 1.5em 0;
   padding: 1rem 1.1rem;
   border: 1px solid rgb(var(--color-border));
   border-radius: 16px;
