@@ -14,8 +14,42 @@ const posts = (await getCollection("blog"))
   }))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
+type PostItem = (typeof posts)[number] & { index: number };
+type YearGroup = {
+  year: number;
+  posts: PostItem[];
+};
+
+const yearGroups = posts.reduce<YearGroup[]>((groups, post, index) => {
+  const year = post.data.date.getFullYear();
+  const postItem = {
+    ...post,
+    index,
+  };
+  const currentGroup = groups.at(-1);
+
+  if (currentGroup && currentGroup.year === year) {
+    currentGroup.posts.push(postItem);
+    return groups;
+  }
+
+  groups.push({
+    year,
+    posts: [postItem],
+  });
+  return groups;
+}, []);
+
 const pageSize = 20;
 const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
+const initialYear = String(yearGroups[0]?.year ?? "");
+
+const createYearMaskDataUri = (year: string) => {
+  const safeYear = year || "0000";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420"><text x="100%" y="73%" text-anchor="end" font-family="Iowan Old Style, Baskerville, Georgia, serif" font-size="320" font-weight="700" letter-spacing="-18" fill="black">${safeYear}</text></svg>`;
+
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+};
 ---
 
 <!doctype html>
@@ -28,7 +62,95 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
         padding-block: 2.75rem 4rem;
       }
 
+      .post-archive {
+        position: relative;
+      }
+
+      .year-backdrop {
+        position: sticky;
+        top: clamp(5.5rem, 16vh, 8.5rem);
+        z-index: 0;
+        height: clamp(7.5rem, 22vw, 12rem);
+        margin-bottom: calc(clamp(7.5rem, 22vw, 12rem) * -1);
+        pointer-events: none;
+      }
+
+      .year-backdrop[hidden] {
+        display: none;
+      }
+
+      .year-backdrop-label {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: rgba(var(--color-text-strong), 0.09);
+        opacity: 0;
+        transform: translateY(-12%);
+        transform-origin: right center;
+        transition:
+          opacity 0.28s ease,
+          transform 0.28s ease,
+          background-color 0.2s ease;
+        -webkit-mask-image: var(--year-mask-image);
+        mask-image: var(--year-mask-image);
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: right center;
+        mask-position: right center;
+        -webkit-mask-size: min(100%, 34rem) auto;
+        mask-size: min(100%, 34rem) auto;
+      }
+
+      .post-archive[data-active-year] .year-backdrop-label {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
       .post-grid {
+        position: relative;
+        z-index: 1;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .year-group {
+        list-style: none;
+      }
+
+      .year-group[hidden] {
+        display: none;
+      }
+
+      .year-divider {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin: 0;
+        padding: 1.5rem 0 0.35rem;
+        color: rgb(var(--color-text-muted));
+        font-size: 0.9rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+
+      .year-divider::before {
+        content: "";
+        flex: 1 1 auto;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          rgba(var(--color-border), 0.28),
+          rgba(var(--color-border), 0.85)
+        );
+        order: 2;
+      }
+
+      .year-divider span {
+        order: 1;
+      }
+
+      .year-group-posts {
         list-style: none;
         margin: 0;
         padding: 0;
@@ -36,6 +158,7 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
 
       .post-card {
         border-bottom: 1px solid rgba(var(--color-border), 0.7);
+        background: transparent;
       }
 
       .post-card[hidden] {
@@ -121,6 +244,24 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
           padding-block: 1rem;
         }
 
+        .year-backdrop {
+          top: 5.35rem;
+          height: clamp(5rem, 28vw, 7rem);
+          margin-bottom: calc(clamp(5rem, 28vw, 7rem) * -1);
+        }
+
+        .year-backdrop-label {
+          -webkit-mask-size: min(100%, 16rem) auto;
+          mask-size: min(100%, 16rem) auto;
+          background: rgba(var(--color-text-strong), 0.08);
+        }
+
+        .year-divider {
+          padding-top: 1.1rem;
+          font-size: 0.76rem;
+          letter-spacing: 0.2em;
+        }
+
         .post-link {
           padding: 1rem 0;
         }
@@ -130,7 +271,14 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
   <body>
     <Header />
     <main>
-      <section aria-label="Blog list">
+      <section class="post-archive" data-post-archive aria-label="Blog list">
+        <div class="year-backdrop" data-year-backdrop hidden={!initialYear}>
+          <span
+            class="year-backdrop-label"
+            data-year-backdrop-label
+            style={`--year-mask-image: ${createYearMaskDataUri(initialYear)}`}
+          ></span>
+        </div>
         <ul
           class="post-grid"
           data-post-list
@@ -138,19 +286,28 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
           aria-label="Blog posts"
         >
           {
-            posts.map((post, index) => (
-              <li class="post-card" data-post-item data-post-index={index}>
-                <a class="post-link" href={`/blog/${post.id}/`}>
-                  <div class="post-card-header">
-                    <div class="post-meta">
-                      <p class="post-date">
-                        <FormattedDate date={post.data.date} />
-                      </p>
-                      <span class="post-word-count">{post.wordCount} 字</span>
-                    </div>
-                    <h2 class="post-title">{post.data.title}</h2>
-                  </div>
-                </a>
+            yearGroups.map((group) => (
+              <li class="year-group" data-year-group data-year={group.year}>
+                <p class="year-divider">
+                  <span>{group.year}</span>
+                </p>
+                <ul class="year-group-posts" aria-label={`${group.year} posts`}>
+                  {group.posts.map((post) => (
+                    <li class="post-card" data-post-item data-post-index={post.index}>
+                      <a class="post-link" href={`/blog/${post.id}/`}>
+                        <div class="post-card-header">
+                          <div class="post-meta">
+                            <p class="post-date">
+                              <FormattedDate date={post.data.date} />
+                            </p>
+                            <span class="post-word-count">{post.wordCount} 字</span>
+                          </div>
+                          <h2 class="post-title">{post.data.title}</h2>
+                        </div>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))
           }
@@ -177,27 +334,131 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
     </main>
 
     <script>
+      const buildYearMask = (year) => {
+        const safeYear = year || "0000";
+        const svg =
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420">` +
+          `<text x="100%" y="73%" text-anchor="end" font-family="Iowan Old Style, Baskerville, Georgia, serif" font-size="320" font-weight="700" letter-spacing="-18" fill="black">${safeYear}</text>` +
+          `</svg>`;
+
+        return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+      };
+
       const postList = document.querySelector("[data-post-list]");
       const pagination = document.querySelector("[data-pagination]");
+      const archive = document.querySelector("[data-post-archive]");
+      const yearBackdrop = document.querySelector("[data-year-backdrop]");
+      const yearBackdropLabel = document.querySelector(
+        "[data-year-backdrop-label]",
+      );
 
-      if (
-        postList instanceof HTMLElement &&
-        pagination instanceof HTMLElement
-      ) {
+      if (postList instanceof HTMLElement && archive instanceof HTMLElement) {
         const postItems = Array.from(
           postList.querySelectorAll("[data-post-item]"),
         );
+        const yearGroups = Array.from(
+          postList.querySelectorAll("[data-year-group]"),
+        ).map((group) => ({
+          element: group,
+          year: group.getAttribute("data-year") || "",
+          items: Array.from(group.querySelectorAll("[data-post-item]")),
+        }));
         const pageSize = Number(postList.dataset.pageSize) || 20;
         const totalPages = Math.max(1, Math.ceil(postItems.length / pageSize));
-        const previousButton = pagination.querySelector(
-          "[data-pagination-prev]",
-        );
-        const nextButton = pagination.querySelector("[data-pagination-next]");
-        const pageButtons = Array.from(
-          pagination.querySelectorAll("[data-pagination-page]"),
-        );
+        const previousButton =
+          pagination instanceof HTMLElement
+            ? pagination.querySelector("[data-pagination-prev]")
+            : null;
+        const nextButton =
+          pagination instanceof HTMLElement
+            ? pagination.querySelector("[data-pagination-next]")
+            : null;
+        const pageButtons =
+          pagination instanceof HTMLElement
+            ? Array.from(pagination.querySelectorAll("[data-pagination-page]"))
+            : [];
         const sectionTop = postList.closest("section");
         let currentPage = 1;
+        let activeYear = archive.dataset.activeYear || "";
+        let syncFrame = 0;
+
+        const setActiveYear = (year) => {
+          if (!year || activeYear === year) return;
+          activeYear = year;
+          archive.dataset.activeYear = year;
+
+          if (yearBackdrop instanceof HTMLElement) {
+            yearBackdrop.hidden = false;
+          }
+
+          if (yearBackdropLabel instanceof HTMLElement) {
+            yearBackdropLabel.style.setProperty(
+              "--year-mask-image",
+              buildYearMask(year),
+            );
+          }
+        };
+
+        const syncVisibleYearGroups = () => {
+          yearGroups.forEach((group) => {
+            const hasVisiblePosts = group.items.some((item) => !item.hidden);
+            group.element.hidden = !hasVisiblePosts;
+          });
+        };
+
+        const syncActiveYear = () => {
+          const visibleGroups = yearGroups.filter(
+            (group) => !group.element.hidden,
+          );
+
+          if (!visibleGroups.length) {
+            archive.removeAttribute("data-active-year");
+            activeYear = "";
+            if (yearBackdrop instanceof HTMLElement) {
+              yearBackdrop.hidden = true;
+            }
+            return;
+          }
+
+          const viewportHeight =
+            window.innerHeight || document.documentElement.clientHeight;
+          const sectionRect = archive.getBoundingClientRect();
+          const isSectionVisible =
+            sectionRect.bottom > 96 && sectionRect.top < viewportHeight - 48;
+
+          if (yearBackdrop instanceof HTMLElement) {
+            yearBackdrop.hidden = !isSectionVisible;
+          }
+
+          if (!isSectionVisible) return;
+
+          const activationLine = Math.min(
+            Math.max(viewportHeight * 0.28, 120),
+            240,
+          );
+          const visibleRects = visibleGroups
+            .map((group) => ({
+              group,
+              rect: group.element.getBoundingClientRect(),
+            }))
+            .filter(
+              ({ rect }) => rect.bottom > 0 && rect.top < viewportHeight,
+            );
+          const passedGroup = visibleRects
+            .filter(({ rect }) => rect.top <= activationLine)
+            .at(-1)?.group;
+          const fallbackGroup = visibleRects[0]?.group || visibleGroups[0];
+
+          setActiveYear(passedGroup?.year || fallbackGroup.year);
+        };
+
+        const queueSyncActiveYear = () => {
+          if (syncFrame) return;
+          syncFrame = window.requestAnimationFrame(() => {
+            syncFrame = 0;
+            syncActiveYear();
+          });
+        };
 
         const renderPage = (page, scrollToTop = false) => {
           currentPage = Math.min(Math.max(page, 1), totalPages);
@@ -226,6 +487,9 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
             nextButton.disabled = currentPage === totalPages;
           }
 
+          syncVisibleYearGroups();
+          syncActiveYear();
+
           if (scrollToTop && sectionTop instanceof HTMLElement) {
             sectionTop.scrollIntoView({ behavior: "smooth", block: "start" });
           }
@@ -249,6 +513,11 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
             renderPage(currentPage + 1, true);
           });
         }
+
+        window.addEventListener("scroll", queueSyncActiveYear, {
+          passive: true,
+        });
+        window.addEventListener("resize", queueSyncActiveYear);
 
         renderPage(1);
       }
