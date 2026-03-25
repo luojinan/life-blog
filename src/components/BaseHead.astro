@@ -52,3 +52,64 @@ const { title, description = title, image = FallbackImage } = Astro.props;
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={new URL(image.src, Astro.url)} />
+
+<script is:inline>
+	(() => {
+		const storageKey = 'theme';
+		const root = document.documentElement;
+		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+		const readStoredTheme = () => {
+			try {
+				const storedTheme = localStorage.getItem(storageKey);
+				return storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : null;
+			} catch {
+				return null;
+			}
+		};
+		const getSystemTheme = () => (mediaQuery.matches ? 'dark' : 'light');
+		const getPreferredTheme = () => readStoredTheme() ?? getSystemTheme();
+		const applyTheme = (theme, emitEvent = true) => {
+			const resolvedTheme = theme === 'dark' ? 'dark' : 'light';
+			root.classList.toggle('dark', resolvedTheme === 'dark');
+			root.dataset.theme = resolvedTheme;
+			root.style.colorScheme = resolvedTheme;
+
+			if (emitEvent) {
+				window.dispatchEvent(new CustomEvent('theme-change', { detail: resolvedTheme }));
+			}
+
+			return resolvedTheme;
+		};
+		const setTheme = (theme) => {
+			const resolvedTheme = applyTheme(theme);
+
+			try {
+				localStorage.setItem(storageKey, resolvedTheme);
+			} catch {
+				// Ignore storage failures and keep the in-memory theme state.
+			}
+
+			return resolvedTheme;
+		};
+
+		window.__theme = {
+			getPreferredTheme,
+			applyTheme,
+			setTheme,
+		};
+
+		applyTheme(getPreferredTheme(), false);
+
+		const handleSystemThemeChange = () => {
+			if (!readStoredTheme()) {
+				applyTheme(getSystemTheme());
+			}
+		};
+
+		if (typeof mediaQuery.addEventListener === 'function') {
+			mediaQuery.addEventListener('change', handleSystemThemeChange);
+		} else {
+			mediaQuery.addListener(handleSystemThemeChange);
+		}
+	})();
+</script>

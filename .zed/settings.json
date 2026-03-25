@@ -1,0 +1,10 @@
+{
+  "tab_size": 2,
+  "language_servers": [
+    "!biome",
+    "!eslint",
+    "!tailwindcss-language-server",
+    "!typescript-language-server",
+    "...",
+  ],
+}

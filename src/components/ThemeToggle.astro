@@ -1,0 +1,100 @@
+<button
+	type="button"
+	class="theme-toggle"
+	data-theme-toggle
+	aria-label="切换到深色主题"
+	aria-pressed="false"
+>
+	<span class="theme-toggle__icon" data-theme-toggle-icon aria-hidden="true">☀</span>
+	<span class="theme-toggle__label" data-theme-toggle-label>浅色</span>
+</button>
+
+<script is:inline>
+	const themeToggles = Array.from(document.querySelectorAll('[data-theme-toggle]'));
+	const themeApi = window.__theme;
+
+	if (themeApi && themeToggles.length > 0) {
+		const syncThemeToggle = (theme) => {
+			const isDark = theme === 'dark';
+
+			themeToggles.forEach((toggle) => {
+				if (!(toggle instanceof HTMLButtonElement)) return;
+
+				const icon = toggle.querySelector('[data-theme-toggle-icon]');
+				const label = toggle.querySelector('[data-theme-toggle-label]');
+
+				toggle.setAttribute('aria-pressed', String(isDark));
+				toggle.setAttribute('aria-label', isDark ? '切换到浅色主题' : '切换到深色主题');
+
+				if (icon instanceof HTMLElement) {
+					icon.textContent = isDark ? '☾' : '☀';
+				}
+
+				if (label instanceof HTMLElement) {
+					label.textContent = isDark ? '深色' : '浅色';
+				}
+			});
+		};
+
+		const getCurrentTheme = () =>
+			document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+		syncThemeToggle(getCurrentTheme());
+
+		window.addEventListener('theme-change', (event) => {
+			syncThemeToggle(event.detail);
+		});
+
+		themeToggles.forEach((toggle) => {
+			if (!(toggle instanceof HTMLButtonElement)) return;
+
+			toggle.addEventListener('click', () => {
+				const nextTheme = getCurrentTheme() === 'dark' ? 'light' : 'dark';
+				syncThemeToggle(themeApi.setTheme(nextTheme));
+			});
+		});
+	}
+</script>
+
+<style>
+	.theme-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.55rem 0.85rem;
+		border: 1px solid rgba(var(--color-border), 0.95);
+		border-radius: 999px;
+		background: rgb(var(--color-bg-elevated));
+		color: rgb(var(--color-text-strong));
+		cursor: pointer;
+		font: inherit;
+		font-size: 0.92rem;
+		line-height: 1;
+		transition:
+			border-color 0.2s ease,
+			background-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.theme-toggle:hover {
+		border-color: rgba(var(--accent-rgb), 0.38);
+		background: rgb(var(--color-bg-muted));
+	}
+
+	.theme-toggle:focus-visible {
+		outline: 2px solid rgba(var(--accent-rgb), 0.55);
+		outline-offset: 2px;
+	}
+
+	.theme-toggle:active {
+		transform: translateY(1px);
+	}
+
+	.theme-toggle__icon {
+		font-size: 1rem;
+	}
+
+	.theme-toggle__label {
+		font-weight: 600;
+	}
+</style>
