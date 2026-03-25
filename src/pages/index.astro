@@ -1,13 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import BlogFooter from '../components/BlogFooter.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { countChineseCharacters } from '../utils/countChineseCharacters';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
+const posts = (await getCollection('blog'))
+	.map((post) => ({
+		...post,
+		wordCount: countChineseCharacters(post.body ?? ''),
+	}))
+	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const pageSize = 20;
 const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
@@ -48,6 +53,19 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
 
 			.post-date {
 				margin: 0;
+				color: rgb(var(--color-text-muted));
+				font-size: 0.92rem;
+				line-height: 1.4;
+			}
+
+			.post-meta {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.post-word-count {
 				color: rgb(var(--color-text-muted));
 				font-size: 0.92rem;
 				line-height: 1.4;
@@ -98,13 +116,6 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
 				text-underline-offset: 0.2em;
 			}
 
-			.pagination-status {
-				min-width: 6.5rem;
-				text-align: center;
-				color: rgb(var(--color-text-muted));
-				font-size: 0.9rem;
-			}
-
 			@media (max-width: 720px) {
 				main {
 					width: min(100%, calc(100% - 1rem));
@@ -121,15 +132,23 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
 		<Header />
 		<main>
 			<section aria-label="Blog list">
-				<ul class="post-grid" data-post-list data-page-size={pageSize} aria-label="Blog posts">
+				<ul
+					class="post-grid"
+					data-post-list
+					data-page-size={pageSize}
+					aria-label="Blog posts"
+				>
 					{
 						posts.map((post, index) => (
 							<li class="post-card" data-post-item data-post-index={index}>
 								<a class="post-link" href={`/blog/${post.id}/`}>
 									<div class="post-card-header">
-										<p class="post-date">
-											<FormattedDate date={post.data.date} />
-										</p>
+										<div class="post-meta">
+											<p class="post-date">
+												<FormattedDate date={post.data.date} />
+											</p>
+											<span class="post-word-count">{post.wordCount} 字</span>
+										</div>
 										<h2 class="post-title">{post.data.title}</h2>
 									</div>
 								</a>
@@ -153,9 +172,9 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
 						))
 					}
 						<button type="button" data-pagination-next>下一页</button>
-					<span class="pagination-status" data-pagination-status aria-live="polite"></span>
 				</nav>
 			</section>
+			<BlogFooter maxWidth="760px" />
 		</main>
 
 		<script>
@@ -171,7 +190,6 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
 				const pageButtons = Array.from(
 					pagination.querySelectorAll('[data-pagination-page]'),
 				);
-				const status = pagination.querySelector('[data-pagination-status]');
 				const sectionTop = postList.closest('section');
 				let currentPage = 1;
 
@@ -200,10 +218,6 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
 
 					if (nextButton instanceof HTMLButtonElement) {
 						nextButton.disabled = currentPage === totalPages;
-					}
-
-					if (status instanceof HTMLElement) {
-						status.textContent = `第 ${currentPage} / ${totalPages} 页`;
 					}
 
 					if (scrollToTop && sectionTop instanceof HTMLElement) {

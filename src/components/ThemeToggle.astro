@@ -4,9 +4,9 @@
 	data-theme-toggle
 	aria-label="切换到深色主题"
 	aria-pressed="false"
+	title="切换主题"
 >
 	<span class="theme-toggle__icon" data-theme-toggle-icon aria-hidden="true">☀</span>
-	<span class="theme-toggle__label" data-theme-toggle-label>浅色</span>
 </button>
 
 <script is:inline>
@@ -21,17 +21,13 @@
 				if (!(toggle instanceof HTMLButtonElement)) return;
 
 				const icon = toggle.querySelector('[data-theme-toggle-icon]');
-				const label = toggle.querySelector('[data-theme-toggle-label]');
 
 				toggle.setAttribute('aria-pressed', String(isDark));
 				toggle.setAttribute('aria-label', isDark ? '切换到浅色主题' : '切换到深色主题');
+				toggle.setAttribute('title', isDark ? '切换到浅色主题' : '切换到深色主题');
 
 				if (icon instanceof HTMLElement) {
 					icon.textContent = isDark ? '☾' : '☀';
-				}
-
-				if (label instanceof HTMLElement) {
-					label.textContent = isDark ? '深色' : '浅色';
 				}
 			});
 		};
@@ -60,25 +56,26 @@
 	.theme-toggle {
 		display: inline-flex;
 		align-items: center;
+		justify-content: center;
 		gap: 0.45rem;
-		padding: 0.55rem 0.85rem;
-		border: 1px solid rgba(var(--color-border), 0.95);
-		border-radius: 999px;
-		background: rgb(var(--color-bg-elevated));
+		width: 2.75rem;
+		height: 2.75rem;
+		padding: 0;
+		border: none;
+		border-bottom: 4px solid transparent;
+		border-radius: 0;
+		background: transparent;
 		color: rgb(var(--color-text-strong));
 		cursor: pointer;
 		font: inherit;
-		font-size: 0.92rem;
 		line-height: 1;
 		transition:
-			border-color 0.2s ease,
-			background-color 0.2s ease,
+			color 0.2s ease,
 			transform 0.2s ease;
 	}
 
 	.theme-toggle:hover {
-		border-color: rgba(var(--accent-rgb), 0.38);
-		background: rgb(var(--color-bg-muted));
+		color: var(--accent);
 	}
 
 	.theme-toggle:focus-visible {
@@ -91,10 +88,7 @@
 	}
 
 	.theme-toggle__icon {
-		font-size: 1rem;
-	}
-
-	.theme-toggle__label {
-		font-weight: 600;
+		display: block;
+		font-size: 1.15rem;
 	}
 </style>
