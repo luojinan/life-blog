@@ -8,43 +8,41 @@
   --accent: #2337ff;
   --accent-dark: #000d8a;
   --accent-rgb: 35, 55, 255;
-  --black: 15, 18, 25;
-  --gray: 96, 115, 159;
-  --gray-light: 229, 233, 240;
-  --gray-dark: 34, 41, 57;
+  --black: 26, 26, 26;
+  --gray: 102, 102, 102;
+  --gray-light: 240, 240, 240;
+  --gray-dark: 42, 42, 42;
   --color-bg: 255, 255, 255;
   --color-bg-elevated: 255, 255, 255;
-  --color-bg-muted: 245, 247, 250;
-  --color-text: 34, 41, 57;
-  --color-text-strong: 15, 18, 25;
-  --color-text-muted: 96, 115, 159;
-  --color-border: 221, 228, 238;
-  --color-code-bg: 238, 242, 247;
-  --color-shadow: 15, 18, 25;
-  --gray-gradient: rgba(var(--gray-light), 50%), #fff;
+  --color-bg-muted: 245, 245, 245;
+  --color-text: 26, 26, 26;
+  --color-text-strong: 26, 26, 26;
+  --color-text-muted: 102, 102, 102;
+  --color-border: 224, 224, 224;
+  --color-code-bg: 243, 243, 243;
+  --color-shadow: 26, 26, 26;
   --box-shadow:
     0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
     0 16px 32px rgba(var(--gray), 33%);
 }
 
 :root.dark {
-  --accent: #91a1ff;
-  --accent-dark: #c7d0ff;
-  --accent-rgb: 145, 161, 255;
-  --black: 244, 247, 255;
-  --gray: 146, 158, 188;
-  --gray-light: 51, 60, 82;
-  --gray-dark: 218, 225, 241;
-  --color-bg: 17, 22, 31;
-  --color-bg-elevated: 24, 30, 42;
-  --color-bg-muted: 31, 38, 53;
-  --color-text: 207, 214, 229;
-  --color-text-strong: 244, 247, 255;
-  --color-text-muted: 146, 158, 188;
-  --color-border: 65, 76, 100;
-  --color-code-bg: 34, 41, 57;
+  --accent: #a7b4ff;
+  --accent-dark: #d5dcff;
+  --accent-rgb: 167, 180, 255;
+  --black: 255, 255, 255;
+  --gray: 148, 148, 148;
+  --gray-light: 36, 36, 36;
+  --gray-dark: 228, 228, 228;
+  --color-bg: 16, 16, 16;
+  --color-bg-elevated: 22, 22, 22;
+  --color-bg-muted: 28, 28, 28;
+  --color-text: 255, 255, 255;
+  --color-text-strong: 255, 255, 255;
+  --color-text-muted: 180, 180, 180;
+  --color-border: 52, 52, 52;
+  --color-code-bg: 30, 30, 30;
   --color-shadow: 0, 0, 0;
-  --gray-gradient: rgba(32, 39, 55, 92%), rgb(17, 22, 31);
   --box-shadow:
     0 2px 6px rgba(0, 0, 0, 35%), 0 8px 24px rgba(0, 0, 0, 30%),
     0 16px 32px rgba(0, 0, 0, 28%);
@@ -64,9 +62,6 @@ body {
   padding: 0;
   text-align: left;
   background-color: rgb(var(--color-bg));
-  background-image: linear-gradient(var(--gray-gradient));
-  background-repeat: no-repeat;
-  background-size: 100% 600px;
   word-wrap: break-word;
   overflow-wrap: break-word;
   color: rgb(var(--color-text));
@@ -78,9 +73,9 @@ body {
 }
 main {
   width: 720px;
-  max-width: calc(100% - 2em);
+  max-width: calc(100% - 1em);
   margin: auto;
-  padding: 3em 1em;
+  padding: 2em 1em;
 }
 h1,
 h2,
@@ -154,9 +149,9 @@ pre > code {
 }
 blockquote {
   border-left: 4px solid var(--accent);
-  padding: 0 0 0 20px;
+  padding: 0 0 0 10px;
   margin: 0;
-  font-size: 1.333em;
+  font-size: 1em;
   color: rgb(var(--color-text));
 }
 hr {
@@ -208,7 +203,7 @@ hr {
 }
 
 .remark-summary::before {
-  content: '▸';
+  content: "▸";
   display: inline-block;
   margin-right: 0.55rem;
   color: var(--accent);
@@ -230,9 +225,6 @@ hr {
 @media (max-width: 720px) {
   body {
     font-size: 18px;
-  }
-  main {
-    padding: 1em;
   }
 
   .remark-container,

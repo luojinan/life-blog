@@ -1,18 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import BlogFooter from '../components/BlogFooter.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { countChineseCharacters } from '../utils/countChineseCharacters';
+import { getCollection } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import BlogFooter from "../components/BlogFooter.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import Header from "../components/Header.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import { countChineseCharacters } from "../utils/countChineseCharacters";
 
-const posts = (await getCollection('blog'))
-	.map((post) => ({
-		...post,
-		wordCount: countChineseCharacters(post.body ?? ''),
-	}))
-	.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const posts = (await getCollection("blog"))
+  .map((post) => ({
+    ...post,
+    wordCount: countChineseCharacters(post.body ?? ""),
+  }))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const pageSize = 20;
 const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
@@ -20,232 +20,238 @@ const totalPages = Math.max(1, Math.ceil(posts.length / pageSize));
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: min(760px, calc(100% - 2rem));
-				padding-block: 2.75rem 4rem;
-			}
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <style>
+      main {
+        width: min(760px, calc(100% - 2rem));
+        padding-block: 2.75rem 4rem;
+      }
 
-			.post-grid {
-				list-style: none;
-				margin: 0;
-				padding: 0;
-				border-top: 1px solid rgba(var(--color-border), 0.7);
-			}
+      .post-grid {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
 
-			.post-card {
-				border-bottom: 1px solid rgba(var(--color-border), 0.7);
-			}
+      .post-card {
+        border-bottom: 1px solid rgba(var(--color-border), 0.7);
+      }
 
-			.post-card[hidden] {
-				display: none;
-			}
+      .post-card[hidden] {
+        display: none;
+      }
 
-			.post-link {
-				display: grid;
-				gap: 0.45rem;
-				padding: 1.2rem 0;
-				color: inherit;
-				text-decoration: none;
-			}
+      .post-link {
+        display: grid;
+        gap: 0.45rem;
+        padding: 1.2rem 0;
+        color: inherit;
+        text-decoration: none;
+      }
 
-			.post-date {
-				margin: 0;
-				color: rgb(var(--color-text-muted));
-				font-size: 0.92rem;
-				line-height: 1.4;
-			}
+      .post-date {
+        margin: 0;
+        color: rgb(var(--color-text-muted));
+        font-size: 0.92rem;
+        line-height: 1.4;
+      }
 
-			.post-meta {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				gap: 0.5rem;
-			}
+      .post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-			.post-word-count {
-				color: rgb(var(--color-text-muted));
-				font-size: 0.92rem;
-				line-height: 1.4;
-			}
+      .post-word-count {
+        color: rgb(var(--color-text-muted));
+        font-size: 0.92rem;
+        line-height: 1.4;
+      }
 
-			.post-title {
-				margin: 0;
-				color: rgb(var(--color-text-strong));
-				font-size: clamp(1.15rem, 2vw, 1.45rem);
-				font-weight: 700;
-				line-height: 1.3;
-				letter-spacing: -0.02em;
-				word-break: break-word;
-			}
+      .post-title {
+        margin: 0;
+        color: rgb(var(--color-text-strong));
+        font-size: clamp(1.15rem, 2vw, 1.45rem);
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+        word-break: break-word;
+      }
 
-			.pagination {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				justify-content: center;
-				gap: 0.35rem 0.5rem;
-				padding-top: 1.5rem;
-			}
+      .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem 0.5rem;
+        padding-top: 1.5rem;
+      }
 
-			.pagination[hidden] {
-				display: none;
-			}
+      .pagination[hidden] {
+        display: none;
+      }
 
-			.pagination button {
-				padding: 0.35rem 0.55rem;
-				border: none;
-				background: transparent;
-				color: rgb(var(--color-text));
-				cursor: pointer;
-				font: inherit;
-				font-size: 0.95rem;
-			}
+      .pagination button {
+        padding: 0.35rem 0.55rem;
+        border: none;
+        background: transparent;
+        color: rgb(var(--color-text));
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.95rem;
+      }
 
-			.pagination button:disabled {
-				cursor: not-allowed;
-				opacity: 0.45;
-			}
+      .pagination button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
 
-			.pagination button[aria-current='page'] {
-				color: var(--accent);
-				font-weight: 700;
-				text-decoration: underline;
-				text-underline-offset: 0.2em;
-			}
+      .pagination button[aria-current="page"] {
+        color: var(--accent);
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+      }
 
-			@media (max-width: 720px) {
-				main {
-					width: min(100%, calc(100% - 1rem));
-					padding-block: 2rem 3rem;
-				}
+      @media (max-width: 720px) {
+        main {
+          width: min(100%, calc(100% - 1rem));
+          padding-block: 1rem 2rem;
+        }
 
-				.post-link {
-					padding: 1rem 0;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section aria-label="Blog list">
-				<ul
-					class="post-grid"
-					data-post-list
-					data-page-size={pageSize}
-					aria-label="Blog posts"
-				>
-					{
-						posts.map((post, index) => (
-							<li class="post-card" data-post-item data-post-index={index}>
-								<a class="post-link" href={`/blog/${post.id}/`}>
-									<div class="post-card-header">
-										<div class="post-meta">
-											<p class="post-date">
-												<FormattedDate date={post.data.date} />
-											</p>
-											<span class="post-word-count">{post.wordCount} 字</span>
-										</div>
-										<h2 class="post-title">{post.data.title}</h2>
-									</div>
-								</a>
-							</li>
-						))
-					}
-				</ul>
+        .post-link {
+          padding: 1rem 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <section aria-label="Blog list">
+        <ul
+          class="post-grid"
+          data-post-list
+          data-page-size={pageSize}
+          aria-label="Blog posts"
+        >
+          {
+            posts.map((post, index) => (
+              <li class="post-card" data-post-item data-post-index={index}>
+                <a class="post-link" href={`/blog/${post.id}/`}>
+                  <div class="post-card-header">
+                    <div class="post-meta">
+                      <p class="post-date">
+                        <FormattedDate date={post.data.date} />
+                      </p>
+                      <span class="post-word-count">{post.wordCount} 字</span>
+                    </div>
+                    <h2 class="post-title">{post.data.title}</h2>
+                  </div>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
 
-				<nav
-					class="pagination"
-					data-pagination
-					aria-label="Pagination"
-					hidden={totalPages <= 1}
-				>
-						<button type="button" data-pagination-prev>上一页</button>
-					{
-						Array.from({ length: totalPages }, (_, index) => (
-							<button type="button" data-pagination-page={index + 1}>
-								{index + 1}
-							</button>
-						))
-					}
-						<button type="button" data-pagination-next>下一页</button>
-				</nav>
-			</section>
-			<BlogFooter maxWidth="760px" />
-		</main>
+        <nav
+          class="pagination"
+          data-pagination
+          aria-label="Pagination"
+          hidden={totalPages <= 1}
+        >
+          <button type="button" data-pagination-prev>上一页</button>
+          {
+            Array.from({ length: totalPages }, (_, index) => (
+              <button type="button" data-pagination-page={index + 1}>
+                {index + 1}
+              </button>
+            ))
+          }
+          <button type="button" data-pagination-next>下一页</button>
+        </nav>
+      </section>
+      <BlogFooter maxWidth="760px" />
+    </main>
 
-		<script>
-			const postList = document.querySelector('[data-post-list]');
-			const pagination = document.querySelector('[data-pagination]');
+    <script>
+      const postList = document.querySelector("[data-post-list]");
+      const pagination = document.querySelector("[data-pagination]");
 
-			if (postList instanceof HTMLElement && pagination instanceof HTMLElement) {
-				const postItems = Array.from(postList.querySelectorAll('[data-post-item]'));
-				const pageSize = Number(postList.dataset.pageSize) || 20;
-				const totalPages = Math.max(1, Math.ceil(postItems.length / pageSize));
-				const previousButton = pagination.querySelector('[data-pagination-prev]');
-				const nextButton = pagination.querySelector('[data-pagination-next]');
-				const pageButtons = Array.from(
-					pagination.querySelectorAll('[data-pagination-page]'),
-				);
-				const sectionTop = postList.closest('section');
-				let currentPage = 1;
+      if (
+        postList instanceof HTMLElement &&
+        pagination instanceof HTMLElement
+      ) {
+        const postItems = Array.from(
+          postList.querySelectorAll("[data-post-item]"),
+        );
+        const pageSize = Number(postList.dataset.pageSize) || 20;
+        const totalPages = Math.max(1, Math.ceil(postItems.length / pageSize));
+        const previousButton = pagination.querySelector(
+          "[data-pagination-prev]",
+        );
+        const nextButton = pagination.querySelector("[data-pagination-next]");
+        const pageButtons = Array.from(
+          pagination.querySelectorAll("[data-pagination-page]"),
+        );
+        const sectionTop = postList.closest("section");
+        let currentPage = 1;
 
-				const renderPage = (page, scrollToTop = false) => {
-					currentPage = Math.min(Math.max(page, 1), totalPages);
-					const start = (currentPage - 1) * pageSize;
-					const end = start + pageSize;
+        const renderPage = (page, scrollToTop = false) => {
+          currentPage = Math.min(Math.max(page, 1), totalPages);
+          const start = (currentPage - 1) * pageSize;
+          const end = start + pageSize;
 
-					postItems.forEach((item, index) => {
-						item.hidden = index < start || index >= end;
-					});
+          postItems.forEach((item, index) => {
+            item.hidden = index < start || index >= end;
+          });
 
-					pageButtons.forEach((button) => {
-						if (!(button instanceof HTMLButtonElement)) return;
-						const buttonPage = Number(button.dataset.paginationPage);
-						if (buttonPage === currentPage) {
-							button.setAttribute('aria-current', 'page');
-						} else {
-							button.removeAttribute('aria-current');
-						}
-					});
+          pageButtons.forEach((button) => {
+            if (!(button instanceof HTMLButtonElement)) return;
+            const buttonPage = Number(button.dataset.paginationPage);
+            if (buttonPage === currentPage) {
+              button.setAttribute("aria-current", "page");
+            } else {
+              button.removeAttribute("aria-current");
+            }
+          });
 
-					if (previousButton instanceof HTMLButtonElement) {
-						previousButton.disabled = currentPage === 1;
-					}
+          if (previousButton instanceof HTMLButtonElement) {
+            previousButton.disabled = currentPage === 1;
+          }
 
-					if (nextButton instanceof HTMLButtonElement) {
-						nextButton.disabled = currentPage === totalPages;
-					}
+          if (nextButton instanceof HTMLButtonElement) {
+            nextButton.disabled = currentPage === totalPages;
+          }
 
-					if (scrollToTop && sectionTop instanceof HTMLElement) {
-						sectionTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
-					}
-				};
+          if (scrollToTop && sectionTop instanceof HTMLElement) {
+            sectionTop.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        };
 
-				pageButtons.forEach((button) => {
-					if (!(button instanceof HTMLButtonElement)) return;
-					button.addEventListener('click', () => {
-						renderPage(Number(button.dataset.paginationPage), true);
-					});
-				});
+        pageButtons.forEach((button) => {
+          if (!(button instanceof HTMLButtonElement)) return;
+          button.addEventListener("click", () => {
+            renderPage(Number(button.dataset.paginationPage), true);
+          });
+        });
 
-				if (previousButton instanceof HTMLButtonElement) {
-					previousButton.addEventListener('click', () => {
-						renderPage(currentPage - 1, true);
-					});
-				}
+        if (previousButton instanceof HTMLButtonElement) {
+          previousButton.addEventListener("click", () => {
+            renderPage(currentPage - 1, true);
+          });
+        }
 
-				if (nextButton instanceof HTMLButtonElement) {
-					nextButton.addEventListener('click', () => {
-						renderPage(currentPage + 1, true);
-					});
-				}
+        if (nextButton instanceof HTMLButtonElement) {
+          nextButton.addEventListener("click", () => {
+            renderPage(currentPage + 1, true);
+          });
+        }
 
-				renderPage(1);
-			}
-		</script>
-	</body>
+        renderPage(1);
+      }
+    </script>
+  </body>
 </html>

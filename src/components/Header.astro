@@ -36,9 +36,9 @@ import ThemeToggle from './ThemeToggle.astro';
 	header {
 		margin: 0;
 		padding: 0 1em;
-		background: rgb(var(--color-bg-elevated));
-		border-bottom: 1px solid rgba(var(--color-border), 0.65);
-		box-shadow: 0 10px 30px rgba(var(--color-shadow), 0.12);
+		background: rgb(var(--color-bg));
+		border-bottom: 1px solid rgb(var(--color-border));
+		box-shadow: 0 8px 24px rgba(var(--color-shadow), 0.08);
 	}
 	h2 {
 		margin: 0;
@@ -49,6 +49,7 @@ import ThemeToggle from './ThemeToggle.astro';
 
 	h2 a,
 	h2 a.active {
+		color: rgb(var(--color-text-strong));
 		text-decoration: none;
 	}
 	nav {
@@ -62,13 +63,20 @@ import ThemeToggle from './ThemeToggle.astro';
 	}
 	nav a {
 		padding: 1em 0.35em;
-		color: rgb(var(--color-text-strong));
+		color: rgb(var(--color-text-muted));
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
+		transition:
+			color 0.2s ease,
+			border-color 0.2s ease;
+	}
+	nav a:hover {
+		color: rgb(var(--color-text-strong));
 	}
 	nav a.active {
+		color: rgb(var(--color-text-strong));
 		text-decoration: none;
-		border-bottom-color: var(--accent);
+		border-bottom-color: rgb(var(--color-text-strong));
 	}
 	.internal-links,
 	.nav-end {
@@ -94,13 +102,24 @@ import ThemeToggle from './ThemeToggle.astro';
 		flex-shrink: 0;
 		flex-wrap: nowrap;
 	}
-	@media (max-width: 720px) {
-		header {
-			padding-block: 0.35rem;
+		@media (max-width: 720px) {
+			header {
+				padding-block: 0.35rem;
+			}
+			nav {
+				min-height: 0;
+				flex-wrap: nowrap;
+			}
+			.internal-links {
+				gap: 0.35rem;
+			}
+			.internal-links :global(a) {
+				min-width: 2.25rem;
+				padding: 0.7rem 0.3rem;
+			}
+			.internal-links :global(svg) {
+				width: 18px;
+				height: 18px;
+			}
 		}
-		nav {
-			min-height: 0;
-			flex-wrap: nowrap;
-		}
-	}
-</style>
+	</style>
