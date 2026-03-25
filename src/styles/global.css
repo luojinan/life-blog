@@ -163,12 +163,82 @@ hr {
   border: none;
   border-top: 1px solid rgb(var(--color-border));
 }
+
+.remark-container,
+.remark-details {
+  margin: 2.5em 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgb(var(--color-border));
+  border-radius: 16px;
+  background: rgb(var(--color-bg-elevated));
+  box-shadow: 0 12px 30px rgba(var(--color-shadow), 0.06);
+}
+
+.remark-container-title,
+.remark-summary {
+  display: block;
+  margin-bottom: 0.85rem;
+  color: rgb(var(--color-text-strong));
+  font-size: 0.95em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.remark-container.info {
+  background: rgb(var(--color-bg-muted));
+  border-color: rgba(var(--accent-rgb), 0.28);
+}
+
+.remark-container.info > .remark-container-title {
+  color: var(--accent);
+}
+
+.remark-details {
+  padding-bottom: 0.35rem;
+}
+
+.remark-summary {
+  margin-bottom: 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.remark-summary::-webkit-details-marker {
+  display: none;
+}
+
+.remark-summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 0.55rem;
+  color: var(--accent);
+  transition: transform 0.2s ease;
+}
+
+.remark-details[open] > .remark-summary::before {
+  transform: rotate(90deg);
+}
+
+.remark-details[open] > .remark-summary {
+  margin-bottom: 1rem;
+}
+
+.remark-details > :last-child,
+.remark-container > :last-child {
+  margin-bottom: 0;
+}
 @media (max-width: 720px) {
   body {
     font-size: 18px;
   }
   main {
     padding: 1em;
+  }
+
+  .remark-container,
+  .remark-details {
+    padding: 0.9rem 0.95rem;
+    border-radius: 14px;
   }
 }
 

@@ -23,6 +23,9 @@ importers:
       astro:
         specifier: ^6.0.8
         version: 6.0.8(@types/node@24.12.0)(rollup@4.60.0)
+      remark-flexible-containers:
+        specifier: ^1.5.3
+        version: 1.5.3(unified@11.0.5)
       sharp:
         specifier: ^0.34.3
         version: 0.34.5
@@ -1572,6 +1575,11 @@ packages:
   rehype@13.0.2:
     resolution: {integrity: sha512-j31mdaRFrwFRUIlxGeuPXXKWQxet52RBQRvCmzl5eCefn/KGbomK5GMHNMsOJf55fgo3qw5tST5neDuarDYR2A==, tarball: https://registry.npmmirror.com/rehype/-/rehype-13.0.2.tgz}
 
+  remark-flexible-containers@1.5.3:
+    resolution: {integrity: sha512-ooJyMBm9Dc17NhvWyXwS8cfMDjFiGIyLemeN5z1eowVUOGVltSqFlBy3Xu9rLXWTQj5kK2DHeoRk4pjL+cTWOQ==, tarball: https://registry.npmmirror.com/remark-flexible-containers/-/remark-flexible-containers-1.5.3.tgz}
+    peerDependencies:
+      unified: ^11
+
   remark-gfm@4.0.1:
     resolution: {integrity: sha512-1quofZ2RQ9EWdeN34S79+KExV1764+wCUGop5CPL1WGdD0ocPpu91lzPGbwWMECpEpd42kJGQwzRfyov9j4yNg==, tarball: https://registry.npmmirror.com/remark-gfm/-/remark-gfm-4.0.1.tgz}
 
@@ -1731,8 +1739,14 @@ packages:
   unifont@0.7.4:
     resolution: {integrity: sha512-oHeis4/xl42HUIeHuNZRGEvxj5AaIKR+bHPNegRq5LV1gdc3jundpONbjglKpihmJf+dswygdMJn3eftGIMemg==, tarball: https://registry.npmmirror.com/unifont/-/unifont-0.7.4.tgz}
 
+  unist-builder@4.0.0:
+    resolution: {integrity: sha512-wmRFnH+BLpZnTKpc5L7O67Kac89s9HMrtELpnNaE6TAobq5DTZZs5YaTQfAZBA9bFPECx2uVAPO31c+GVug8mg==, tarball: https://registry.npmmirror.com/unist-builder/-/unist-builder-4.0.0.tgz}
+
   unist-util-find-after@5.0.0:
     resolution: {integrity: sha512-amQa0Ep2m6hE2g72AugUItjbuM8X8cGQnFoHk0pGfrFeT9GZhzN5SW8nRsiGKK7Aif4CrACPENkA6P/Lw6fHGQ==, tarball: https://registry.npmmirror.com/unist-util-find-after/-/unist-util-find-after-5.0.0.tgz}
+
+  unist-util-find-between-all@1.1.6:
+    resolution: {integrity: sha512-KTlYGJMu3waM/UiDoyJ374VzIvRRfw5yO/DLuy2vkzTfjJ41HDgAO/Tukzga7imk9l3W688arso3kE+5b+IW6g==, tarball: https://registry.npmmirror.com/unist-util-find-between-all/-/unist-util-find-between-all-1.1.6.tgz}
 
   unist-util-is@6.0.1:
     resolution: {integrity: sha512-LsiILbtBETkDz8I9p1dQ0uyRUWuaQzd/cuEeS1hoRSyW5E5XGmTzlwY1OrNzzakGowI9Dr/I8HVaw4hTtnxy8g==, tarball: https://registry.npmmirror.com/unist-util-is/-/unist-util-is-6.0.1.tgz}
@@ -3786,6 +3800,15 @@ snapshots:
       rehype-stringify: 10.0.1
       unified: 11.0.5
 
+  remark-flexible-containers@1.5.3(unified@11.0.5):
+    dependencies:
+      '@types/mdast': 4.0.4
+      unified: 11.0.5
+      unist-builder: 4.0.0
+      unist-util-find-after: 5.0.0
+      unist-util-find-between-all: 1.1.6
+      unist-util-visit: 5.1.0
+
   remark-gfm@4.0.1:
     dependencies:
       '@types/mdast': 4.0.4
@@ -4032,7 +4055,16 @@ snapshots:
       ofetch: 1.5.1
       ohash: 2.0.11
 
+  unist-builder@4.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+
   unist-util-find-after@5.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.1
+
+  unist-util-find-between-all@1.1.6:
     dependencies:
       '@types/unist': 3.0.3
       unist-util-is: 6.0.1

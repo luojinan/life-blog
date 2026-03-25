@@ -20,6 +20,7 @@
     "@astrojs/rss": "^4.0.17",
     "@astrojs/sitemap": "^3.7.1",
     "astro": "^6.0.8",
+    "remark-flexible-containers": "^1.5.3",
     "sharp": "^0.34.3"
   },
   "devDependencies": {
