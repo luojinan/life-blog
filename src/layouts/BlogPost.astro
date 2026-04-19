@@ -6,9 +6,21 @@ import BlogFooter from "../components/BlogFooter.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
 
-type Props = CollectionEntry<"blog">["data"];
+type AdjacentPost = Pick<CollectionEntry<"blog">, "id" | "data">;
+type Props = CollectionEntry<"blog">["data"] & {
+  prevPost?: AdjacentPost;
+  nextPost?: AdjacentPost;
+};
 
-const { title, description, date, updatedDate, heroImage } = Astro.props;
+const { title, description, date, updatedDate, heroImage, prevPost, nextPost } =
+  Astro.props;
+const hasPostPagination = Boolean(prevPost || nextPost);
+const formatPostDate = (value: Date) =>
+  [
+    value.getFullYear(),
+    String(value.getMonth() + 1).padStart(2, "0"),
+    String(value.getDate()).padStart(2, "0"),
+  ].join("-");
 ---
 
 <html lang="en">
@@ -51,6 +63,52 @@ const { title, description, date, updatedDate, heroImage } = Astro.props;
       .last-updated-on {
         font-style: italic;
       }
+      .post-pagination {
+        display: flex;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(var(--color-border), 0.72);
+      }
+      .post-pagination-link {
+        flex: 1 1 0;
+        display: grid;
+        gap: 0.35rem;
+        min-width: 0;
+        padding: 1rem 1.1rem;
+        border: 1px solid rgba(var(--color-border), 0.85);
+        border-radius: 16px;
+        background: rgb(var(--color-bg-elevated));
+        color: inherit;
+        text-decoration: none;
+        transition:
+          border-color 0.2s ease,
+          background-color 0.2s ease,
+          transform 0.2s ease;
+      }
+      .post-pagination-link:hover {
+        border-color: rgba(var(--accent-rgb), 0.45);
+        background: rgb(var(--color-bg-muted));
+        transform: translateY(-1px);
+      }
+      .post-pagination-link--next {
+        margin-left: auto;
+        text-align: right;
+      }
+      .post-pagination-label {
+        color: rgb(var(--color-text-muted));
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .post-pagination-title {
+        margin: 0;
+        color: rgb(var(--color-text-strong));
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.45;
+        word-break: break-word;
+      }
     </style>
   </head>
 
@@ -81,6 +139,31 @@ const { title, description, date, updatedDate, heroImage } = Astro.props;
             <hr />
           </div>
           <slot />
+          {
+            hasPostPagination && (
+              <nav class="post-pagination" aria-label="Post pagination">
+                {prevPost && (
+                  <a class="post-pagination-link" href={`/blog/${prevPost.id}/`}>
+                    <span class="post-pagination-label">上一篇</span>
+                    <p class="post-pagination-title">
+                      {prevPost.data.title}（{formatPostDate(prevPost.data.date)}）
+                    </p>
+                  </a>
+                )}
+                {nextPost && (
+                  <a
+                    class="post-pagination-link post-pagination-link--next"
+                    href={`/blog/${nextPost.id}/`}
+                  >
+                    <span class="post-pagination-label">下一篇</span>
+                    <p class="post-pagination-title">
+                      {nextPost.data.title}（{formatPostDate(nextPost.data.date)}）
+                    </p>
+                  </a>
+                )}
+              </nav>
+            )
+          }
         </div>
         <BlogFooter />
       </article>

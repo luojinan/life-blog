@@ -10,11 +10,22 @@ export async function getStaticPaths() {
 	}));
 }
 type Props = CollectionEntry<'blog'>;
+type AdjacentPost = Pick<CollectionEntry<'blog'>, 'id' | 'data'>;
 
 const post = Astro.props;
 const { Content } = await render(post);
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const currentPostIndex = posts.findIndex((entry) => entry.id === post.id);
+const prevPost: AdjacentPost | undefined =
+	currentPostIndex > 0 ? posts[currentPostIndex - 1] : undefined;
+const nextPost: AdjacentPost | undefined =
+	currentPostIndex >= 0 && currentPostIndex < posts.length - 1
+		? posts[currentPostIndex + 1]
+		: undefined;
 ---
 
-<BlogPost {...post.data}>
+<BlogPost {...post.data} prevPost={prevPost} nextPost={nextPost}>
 	<Content />
 </BlogPost>

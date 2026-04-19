@@ -37,7 +37,7 @@
   --color-bg: 16, 16, 16;
   --color-bg-elevated: 22, 22, 22;
   --color-bg-muted: 28, 28, 28;
-  --color-text: 255, 255, 255;
+  --color-text: 229, 231, 235;
   --color-text-strong: 255, 255, 255;
   --color-text-muted: 180, 180, 180;
   --color-border: 52, 52, 52;
@@ -65,7 +65,7 @@ body {
   word-wrap: break-word;
   overflow-wrap: break-word;
   color: rgb(var(--color-text));
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1.7;
   transition:
     background-color 0.2s ease,
